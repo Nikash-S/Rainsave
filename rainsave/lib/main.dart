@@ -75,7 +75,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _buildLearnTab(),
           _buildGamesTab(),
           _buildTicketsTab(),
-          _buildStoreTab(), // Newly implemented Store Tab
+          _buildStoreTab(), 
           _buildHelpTab(),
         ],
       ),
@@ -149,7 +149,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 1: HOME ---
+  // --- TAB 1: HOME (Updated with all cards) ---
   Widget _buildHomeTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -160,10 +160,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           children: [
             const Text("Today", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
             Chip(
-              label: const Text("6-day streak", style: TextStyle(color: Color(0xFF2E67A0), fontSize: 12)),
+              label: const Text("6-day streak", style: TextStyle(color: Color(0xFF2E67A0), fontSize: 12, fontWeight: FontWeight.w600)),
               backgroundColor: Colors.blue[50],
               side: BorderSide.none,
-              avatar: const Icon(Icons.local_fire_department, size: 14, color: Color(0xFF2E67A0)),
+              avatar: const Icon(Icons.local_fire_department, size: 16, color: Color(0xFF2E67A0)),
             ),
           ],
         ),
@@ -171,13 +171,110 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         _buildBalanceCard("Linked bank balance", "£$linkedBalance", "Connected current account", "Available now"),
         const SizedBox(height: 12),
         _buildRainBalanceCard(),
+        const SizedBox(height: 12),
+        
+        // NEW: Rewards Card
+        _buildRewardsCard(),
         const SizedBox(height: 24),
+        
         const Text("Quick actions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
         _actionRow("Buy tickets", true, () => setState(() => _selectedIndex = 3)),
         _actionRow("Go to Games", false, () => setState(() => _selectedIndex = 2)),
         _actionRow("Do a 3-min lesson", false, () => setState(() => _selectedIndex = 1)),
+        const SizedBox(height: 24),
+
+        // NEW: Risk-aware Nudge Card
+        _buildRiskNudgeCard(),
+        const SizedBox(height: 24),
       ],
+    );
+  }
+
+  // --- NEW HOME TAB HELPERS ---
+
+  Widget _buildRewardsCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey[200]!)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Rewards", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text("Earn from Learn + weekly draws", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(20)),
+                child: Row(
+                  children: [
+                    const Icon(Icons.water_drop, size: 14, color: Color(0xFF2E67A0)),
+                    Text(" $rewards", style: const TextStyle(color: Color(0xFF2E67A0), fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text("Redeem in Store, or enter streak raffles.", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRiskNudgeCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey[200]!)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Risk-aware nudge", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Text("Fridays can be higher-risk. You've protected £${rainTickets * 10} by choosing Rain over risk.", style: const TextStyle(fontSize: 14)),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Calm mode progress", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+              Text("42%", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: 0.42, 
+            backgroundColor: Colors.grey[100], 
+            color: const Color(0xFF192A41), // Darker contrast color shown in screenshot
+            borderRadius: BorderRadius.circular(10), 
+            minHeight: 8
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.black,
+                side: BorderSide(color: Colors.grey[300]!),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 14)
+              ),
+              onPressed: () {},
+              child: const Text("Turn on stronger prompts", style: TextStyle(fontWeight: FontWeight.w600)),
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -226,7 +323,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 5: STORE (New) ---
+  // --- TAB 5: STORE ---
   Widget _buildStoreTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -459,15 +556,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
               Text(amt, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(sub, style: TextStyle(color: Colors.grey[500], fontSize: 13)),
-              Text(trailing, style: TextStyle(color: Colors.grey[500], fontSize: 13)),
+              Text(sub, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+              Text(trailing, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
             ],
           ),
         ],
@@ -485,17 +582,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Rain Balance", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text("£${rainTickets * 10}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text("Rain Balance", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text("£${rainTickets * 10}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ],
           ),
-          Text("Principal-protected tickets", style: TextStyle(color: Colors.grey[500])),
+          Text("Principal-protected tickets", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
           const SizedBox(height: 20),
           Row(
             children: [
               _miniStat("Tickets", "$rainTickets", "held"),
               const SizedBox(width: 8),
-              _miniStat("Next draw", "Sun 7pm", "weekly"),
+              _miniStat("Next draw", "Sun\n7pm", "weekly"),
               const SizedBox(width: 8),
               _miniStat("Intensity", "Medium", "tapering"),
             ],
@@ -508,14 +605,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget _miniStat(String label, String val, String sub) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(12)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-            Text(val, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(sub, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            const SizedBox(height: 4),
+            Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            Text(sub, style: const TextStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),
       ),
@@ -529,7 +627,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(color: primary ? const Color(0xFF2E67A0) : Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey[200]!)),
+          decoration: BoxDecoration(
+            color: primary ? const Color(0xFF2E67A0) : Colors.white, 
+            borderRadius: BorderRadius.circular(12), 
+            border: Border.all(color: Colors.grey[200]!)
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
