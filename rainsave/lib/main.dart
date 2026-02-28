@@ -33,7 +33,7 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 3; // Defaulting to Tickets tab to see changes immediately
+  int _selectedIndex = 4; // Defaulting to Store tab to see changes immediately
 
   // Global Mock App State
   double linkedBalance = 1842.37;
@@ -109,8 +109,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _buildHomeTab(),
           _buildLearnTab(),
           _buildGamesTab(), 
-          _buildTicketsTab(), // Updated Tickets Tab
-          _buildStoreTab(), 
+          _buildTicketsTab(),
+          _buildStoreTab(), // Updated Store Tab
           _buildHelpTab(),
         ],
       ),
@@ -543,7 +543,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 4: TICKETS (UPDATED) ---
+  // --- TAB 4: TICKETS ---
   Widget _buildTicketsTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -604,7 +604,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           const SizedBox(height: 24),
           
-          // BUY SECTION
           Text("Buy quantity", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
           const SizedBox(height: 8),
           TextField(
@@ -634,7 +633,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           const SizedBox(height: 20),
 
-          // SELL SECTION
           Text("Sell quantity", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
           const SizedBox(height: 8),
           TextField(
@@ -664,7 +662,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           const SizedBox(height: 24),
 
-          // ODDS DROPDOWN
           Container(
             decoration: BoxDecoration(color: const Color(0xFFF0F4F8), borderRadius: BorderRadius.circular(12)),
             child: Theme(
@@ -727,7 +724,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 5: STORE ---
+  // --- TAB 5: STORE (UPDATED) ---
   Widget _buildStoreTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -751,69 +748,214 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
         const SizedBox(height: 16),
         
-        const Text("Vouchers & Gift Cards", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 12),
-        _buildStoreItemCard("£5 Supermarket Voucher", "Groceries and essentials", 500, Icons.local_grocery_store_outlined),
-        _buildStoreItemCard("£10 Coffee Card", "Treat yourself", 1000, Icons.coffee_outlined),
-        
-        const SizedBox(height: 24),
-        const Text("Give Back", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 12),
-        _buildStoreItemCard("£5 Charity Donation", "Mental health support fund", 500, Icons.volunteer_activism_outlined),
+        // 1. Money Cash-out Section
+        _buildStoreMainCard(
+          titleIcon: const Text("£", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          title: "Redeem to money",
+          subtitle: "Convert Raindrops into cash-out vouchers.",
+          children: [
+            _buildStoreDetailedItem("£5 cash-out", "1,000 drops", 1000, "Redeem £5"),
+            const SizedBox(height: 12),
+            _buildStoreDetailedItem("£10 cash-out", "2,000 drops", 2000, "Redeem £10"),
+          ]
+        ),
+        const SizedBox(height: 16),
 
-        const SizedBox(height: 24),
-        const Text("Low-Intensity Raffles", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 12),
-        _buildStoreItemCard("Weekend Retreat Entry", "Drawn monthly, no visual animations", 50, Icons.landscape_outlined),
+        // 2. Redeem Raindrops Section
+        _buildStoreMainCard(
+          titleIcon: const Icon(Icons.card_giftcard, size: 20),
+          title: "Redeem Raindrops",
+          subtitle: "Unlock calmer UI and safety tools.",
+          children: [
+            _buildStoreDetailedItem("Calm Mode Theme Pack", "Softer visuals + calmer\nanimations", 300, "Redeem"),
+            const SizedBox(height: 12),
+            _buildStoreDetailedItem("Custom Avatar", "Personalise your profile", 250, "Redeem"),
+          ]
+        ),
+        const SizedBox(height: 16),
+
+        // 3. Streak Raffles Section
+        _buildStreakRafflesCard(),
       ],
     );
   }
 
-  Widget _buildStoreItemCard(String title, String subtitle, int cost, IconData icon) {
+  Widget _buildStoreMainCard({required Widget titleIcon, required String title, required String subtitle, required List<Widget> children}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.grey[200]!)
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, color: const Color(0xFF2E67A0), size: 28),
+          Row(
+            children: [
+              titleIcon,
+              const SizedBox(width: 8),
+              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-              ],
-            ),
+          const SizedBox(height: 4),
+          Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStoreDetailedItem(String title, String subtitle, int cost, String btnText) {
+    bool canAfford = rewards >= cost;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!)
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    const SizedBox(height: 4),
+                    Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(12)),
+                child: Row(
+                  children: [
+                    const Icon(Icons.water_drop, size: 14, color: Color(0xFF2E67A0)),
+                    const SizedBox(width: 4),
+                    Text("$cost", style: const TextStyle(color: Color(0xFF2E67A0), fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
+                ),
+              )
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[50],
-              foregroundColor: const Color(0xFF2E67A0),
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              minimumSize: Size.zero,
-            ),
-            onPressed: () => _purchaseStoreItem(cost, title),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.water_drop, size: 14),
-                const SizedBox(width: 4),
-                Text("$cost"),
-              ],
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: canAfford ? const Color(0xFF2E67A0) : Colors.grey[100],
+                foregroundColor: canAfford ? Colors.white : Colors.grey[400],
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: canAfford ? () => _purchaseStoreItem(cost, title) : null,
+              child: Text(canAfford ? btnText : "Not enough", style: const TextStyle(fontWeight: FontWeight.w600)),
             ),
           )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStreakRafflesCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!)
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.confirmation_number_outlined, size: 20),
+                  SizedBox(width: 8),
+                  Text("Streak raffles", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(12)),
+                child: const Row(
+                  children: [
+                    Icon(Icons.local_fire_department, size: 14, color: Color(0xFF2E67A0)),
+                    SizedBox(width: 4),
+                    Text("6 days", style: TextStyle(color: Color(0xFF2E67A0), fontWeight: FontWeight.bold, fontSize: 12)),
+                  ],
+                ),
+              )
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text("Entries come from your daily learning streak (not money).", style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.3)),
+          const SizedBox(height: 20),
+          
+          _streakRow("Daily free entries", "3"),
+          _streakRow("Used today", "0"),
+          _streakRow("Remaining", "3"),
+          const SizedBox(height: 20),
+          
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2E67A0),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () {},
+              child: const Text("Enter today's raffle", style: TextStyle(fontWeight: FontWeight.w600)),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.black,
+                side: BorderSide(color: Colors.grey[300]!),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () {},
+              child: const Text("View prizes & rules", style: TextStyle(fontWeight: FontWeight.w600)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: const Color(0xFFF0F4F8), borderRadius: BorderRadius.circular(12)),
+            child: Text("Raffles use streak entries to keep motivation positive and harm-reduction focused.", style: TextStyle(color: Colors.grey[700], fontSize: 13, height: 1.4)),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _streakRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         ],
       ),
     );
