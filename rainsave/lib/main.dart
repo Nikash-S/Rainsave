@@ -33,7 +33,7 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2; // Defaulting to Games tab to see the changes immediately
 
   // Global Mock App State
   double linkedBalance = 1842.37;
@@ -73,7 +73,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         children: [
           _buildHomeTab(),
           _buildLearnTab(),
-          _buildGamesTab(),
+          _buildGamesTab(), // Updated Games Tab
           _buildTicketsTab(),
           _buildStoreTab(), 
           _buildHelpTab(),
@@ -149,7 +149,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 1: HOME (Updated with all cards) ---
+  // --- TAB 1: HOME ---
   Widget _buildHomeTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -172,26 +172,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         const SizedBox(height: 12),
         _buildRainBalanceCard(),
         const SizedBox(height: 12),
-        
-        // NEW: Rewards Card
         _buildRewardsCard(),
         const SizedBox(height: 24),
-        
         const Text("Quick actions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
         _actionRow("Buy tickets", true, () => setState(() => _selectedIndex = 3)),
         _actionRow("Go to Games", false, () => setState(() => _selectedIndex = 2)),
         _actionRow("Do a 3-min lesson", false, () => setState(() => _selectedIndex = 1)),
         const SizedBox(height: 24),
-
-        // NEW: Risk-aware Nudge Card
         _buildRiskNudgeCard(),
         const SizedBox(height: 24),
       ],
     );
   }
-
-  // --- NEW HOME TAB HELPERS ---
 
   Widget _buildRewardsCard() {
     return Container(
@@ -255,7 +248,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           LinearProgressIndicator(
             value: 0.42, 
             backgroundColor: Colors.grey[100], 
-            color: const Color(0xFF192A41), // Darker contrast color shown in screenshot
+            color: const Color(0xFF192A41), 
             borderRadius: BorderRadius.circular(10), 
             minHeight: 8
           ),
@@ -295,18 +288,232 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 3: GAMES ---
+  // --- TAB 3: GAMES (UPDATED) ---
   Widget _buildGamesTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
       children: [
-        const Text("Games", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Games", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(20)),
+              child: Row(
+                children: [
+                  const Icon(Icons.confirmation_number_outlined, size: 14, color: Color(0xFF2E67A0)),
+                  Text(" $rainTickets tickets", style: const TextStyle(color: Color(0xFF2E67A0), fontWeight: FontWeight.bold, fontSize: 13)),
+                ],
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 16),
         _buildGamesMainCard(),
         const SizedBox(height: 16),
         _buildCalmModeSettings(),
+        const SizedBox(height: 16),
+        _buildSaferLimitsCard(), // NEW Section
+        const SizedBox(height: 24),
       ],
+    );
+  }
+
+  Widget _buildGamesMainCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey[200]!)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Weekly Draw", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 4),
+                    Text("PB-style distribution •\nsmall wins, rare big hit", style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.3)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(8)),
+                child: const Column(
+                  children: [
+                    Text("Intensity:", style: TextStyle(color: Color(0xFF2E67A0), fontSize: 11)),
+                    Text("Medium", style: TextStyle(color: Color(0xFF2E67A0), fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          
+          // Row of 2 mini stats
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(12)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Your tickets", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                      const SizedBox(height: 4),
+                      Text("$rainTickets", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+                      const SizedBox(height: 4),
+                      Text("More tickets =\nmore chances", style: TextStyle(fontSize: 11, color: Colors.grey[500], height: 1.2)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(12)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Next draw", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                      const SizedBox(height: 4),
+                      const Text("Sun\n7pm", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, height: 1.1)),
+                      const SizedBox(height: 4),
+                      Text("Weekly", style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2E67A0), 
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
+              ),
+              onPressed: () {}, 
+              child: const Text("Play", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // View Odds Expandable Dropdown
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F4F8), // Soft blue tint from screenshot
+              borderRadius: BorderRadius.circular(12)
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Removes borders
+              child: ExpansionTile(
+                iconColor: const Color(0xFF2E67A0),
+                collapsedIconColor: const Color(0xFF2E67A0),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                title: Row(
+                  children: [
+                    const Icon(Icons.info_outline, size: 20, color: Color(0xFF2E67A0)),
+                    const SizedBox(width: 8),
+                    const Text("View odds", style: TextStyle(color: Color(0xFF192A41), fontWeight: FontWeight.w600, fontSize: 15)),
+                    const Spacer(),
+                    Text("Tap to expand", style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                  ],
+                ),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Odds of winning:\n\n• £1000 prize: 1 in 10,000\n• £10 prize: 1 in 100\n• £1 prize: 1 in 10\n\nYour principal is never at risk.", 
+                      style: TextStyle(color: Colors.grey[700], fontSize: 13, height: 1.4)
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalmModeSettings() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey[200]!)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Calm mode", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 12),
+          Text("Visual intensity reduces as your streak grows. You keep the yield, but the stimulation tapers.", style: TextStyle(color: Colors.grey[700], height: 1.4)),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.black,
+                side: BorderSide(color: Colors.grey[300]!),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 14)
+              ),
+              onPressed: () {}, 
+              child: const Text("Adjust taper settings", style: TextStyle(fontWeight: FontWeight.w600))
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaferLimitsCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.grey[200]!)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Safer limits", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 16),
+          _settingsRow("Set play window"),
+          _settingsRow("Hide animations"),
+          _settingsRow("Emergency lock", isLast: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _settingsRow(String title, {bool isLast = false}) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 12.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!)
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+          ],
+        ),
+      ),
     );
   }
 
@@ -721,59 +928,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             )
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildGamesMainCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Weekly Draw", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  Text("PB-style distribution", style: TextStyle(color: Colors.grey)),
-                ],
-              ),
-              Chip(label: Text("Medium", style: TextStyle(fontSize: 12)), backgroundColor: Color(0xFFE3F2FD), side: BorderSide.none),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2E67A0), foregroundColor: Colors.white),
-              onPressed: () {}, 
-              child: const Text("Play")
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCalmModeSettings() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Calm mode", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 8),
-          const Text("Visual intensity reduces as your streak grows. You keep the yield, but the stimulation tapers.", style: TextStyle(color: Colors.grey)),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(onPressed: () {}, child: const Text("Adjust taper settings")),
-          )
-        ],
       ),
     );
   }
