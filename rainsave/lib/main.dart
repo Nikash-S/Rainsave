@@ -45,7 +45,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     super.initState();
     _pages = [
       _buildHomeView(),
-      const Center(child: Text("Learn Module")),
+      const Center(child: Text("Learn Section")),
       const Center(child: Text("Games Module")),
       _buildTicketsView(),
       const Center(child: Text("Store")),
