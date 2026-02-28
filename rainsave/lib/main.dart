@@ -199,19 +199,122 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   // --- TAB 3: GAMES ---
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+class GamesTab extends StatefulWidget {
+  @override
+  _GamesTabState createState() => _GamesTabState();
+}
+
+class _GamesTabState extends State<GamesTab> {
+  double _currentInterest = 0.00;
+
+  @override
   Widget _buildGamesTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
       children: [
-        const Text("Games", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        const Text("Arcade", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+        
+        // --- GAME 1: BALL DROP ---
+        _buildGameCard(
+          title: "Gravity Drop",
+          subtitle: "Win up to £50.00",
+          icon: Icons.blur_on,
+          color: Colors.indigoAccent,
+          onTap: () => _openBallDropGame(),
+        ),
+        
         const SizedBox(height: 16),
-        _buildGamesMainCard(),
+
+        // --- GAME 2: LOOT CRATE ---
+        _buildGameCard(
+          title: "Vault Unboxing",
+          subtitle: "Rare items & Cash prizes",
+          icon: Icons.inventory_2,
+          color: Colors.deepPurpleAccent,
+          onTap: () => _openLootCrate(),
+        ),
+
         const SizedBox(height: 16),
-        _buildCalmModeSettings(),
+
+        // --- GAME 3: INTEREST REVEAL ---
+        _buildInterestCard(),
+        
+        const SizedBox(height: 24),
+        const Text("Settings", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        // _buildCalmModeSettings(), // Existing function
       ],
     );
   }
+
+  // Modern UI Card Wrapper
+  Widget _buildGameCard({required String title, required String subtitle, required IconData icon, required Color color, required VoidCallback onTap}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(colors: [color, color.withOpacity(0.7)]),
+        boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        leading: CircleAvatar(backgroundColor: Colors.white24, child: Icon(icon, color: Colors.white)),
+        title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+        subtitle: Text(subtitle, style: const TextStyle(color: Colors.white70)),
+        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  // Interest Reveal Implementation
+  Widget _buildInterestCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1),
+      ),
+      child: Column(
+        children: [
+          const Text("Daily Savings Boost", style: TextStyle(color: Colors.white70, fontSize: 14)),
+          const SizedBox(height: 10),
+          Text(
+            "£${_currentInterest.toStringAsFixed(4)}",
+            style: const TextStyle(color: Colors.amber, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+          ),
+          const SizedBox(height: 15),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            onPressed: () {
+              setState(() {
+                // Logic for minimal vary: 0.01% to 0.03%
+                _currentInterest = 0.01 + (Random().nextDouble() * 0.02);
+              });
+            },
+            child: const Text("REVEAL TODAY'S RATE", style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Placeholder triggers for the complex logic
+  void _openBallDropGame() { /* Navigation to a CustomPaint widget */ }
+  void _openLootCrate() { /* Navigation to a Reel/Spinner widget */ }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(body: _buildGamesTab());
+}
 
   // --- TAB 4: TICKETS ---
   Widget _buildTicketsTab() {
