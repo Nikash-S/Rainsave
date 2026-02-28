@@ -33,13 +33,24 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 2; // Defaulting to Games tab to see the changes immediately
+  int _selectedIndex = 3; // Defaulting to Tickets tab to see changes immediately
 
   // Global Mock App State
   double linkedBalance = 1842.37;
   int rainTickets = 12;
   int rewards = 1280; // "Raindrops" currency
   double learningProgress = 0.66; 
+
+  // Controllers for ticket inputs
+  final TextEditingController _buyController = TextEditingController();
+  final TextEditingController _sellController = TextEditingController();
+
+  @override
+  void dispose() {
+    _buyController.dispose();
+    _sellController.dispose();
+    super.dispose();
+  }
 
   void _purchaseStoreItem(int cost, String itemName) {
     if (rewards >= cost) {
@@ -64,6 +75,30 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     }
   }
 
+  void _buyTickets() {
+    int qty = int.tryParse(_buyController.text) ?? 0;
+    if (qty > 0 && linkedBalance >= (qty * 10)) {
+      setState(() {
+        linkedBalance -= qty * 10;
+        rainTickets += qty;
+        _buyController.clear();
+      });
+      FocusScope.of(context).unfocus(); // hide keyboard
+    }
+  }
+
+  void _sellTickets() {
+    int qty = int.tryParse(_sellController.text) ?? 0;
+    if (qty > 0 && rainTickets >= qty) {
+      setState(() {
+        linkedBalance += qty * 10;
+        rainTickets -= qty;
+        _sellController.clear();
+      });
+      FocusScope.of(context).unfocus(); // hide keyboard
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,8 +108,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         children: [
           _buildHomeTab(),
           _buildLearnTab(),
-          _buildGamesTab(), // Updated Games Tab
-          _buildTicketsTab(),
+          _buildGamesTab(), 
+          _buildTicketsTab(), // Updated Tickets Tab
           _buildStoreTab(), 
           _buildHelpTab(),
         ],
@@ -168,7 +203,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        _buildBalanceCard("Linked bank balance", "£$linkedBalance", "Connected current account", "Available now"),
+        _buildBalanceCard("Linked bank balance", "£${linkedBalance.toStringAsFixed(2)}", "Connected current account", "Available now"),
         const SizedBox(height: 12),
         _buildRainBalanceCard(),
         const SizedBox(height: 12),
@@ -288,7 +323,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 3: GAMES (UPDATED) ---
+  // --- TAB 3: GAMES ---
   Widget _buildGamesTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -315,7 +350,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         const SizedBox(height: 16),
         _buildCalmModeSettings(),
         const SizedBox(height: 16),
-        _buildSaferLimitsCard(), // NEW Section
+        _buildSaferLimitsCard(),
         const SizedBox(height: 24),
       ],
     );
@@ -356,7 +391,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           const SizedBox(height: 20),
           
-          // Row of 2 mini stats
           Row(
             children: [
               Expanded(
@@ -411,14 +445,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           const SizedBox(height: 12),
 
-          // View Odds Expandable Dropdown
           Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0F4F8), // Soft blue tint from screenshot
-              borderRadius: BorderRadius.circular(12)
-            ),
+            decoration: BoxDecoration(color: const Color(0xFFF0F4F8), borderRadius: BorderRadius.circular(12)),
             child: Theme(
-              data: Theme.of(context).copyWith(dividerColor: Colors.transparent), // Removes borders
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
                 iconColor: const Color(0xFF2E67A0),
                 collapsedIconColor: const Color(0xFF2E67A0),
@@ -501,11 +531,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       padding: EdgeInsets.only(bottom: isLast ? 0 : 12.0),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!)
-        ),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey[200]!)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -517,7 +543,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  // --- TAB 4: TICKETS ---
+  // --- TAB 4: TICKETS (UPDATED) ---
   Widget _buildTicketsTab() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -527,6 +553,177 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         const SizedBox(height: 16),
         _buildTicketPurchaseCard(),
       ],
+    );
+  }
+
+  Widget _buildTicketPurchaseCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white, 
+        borderRadius: BorderRadius.circular(16), 
+        border: Border.all(color: Colors.grey[200]!)
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Rain Ticket", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  const SizedBox(height: 4),
+                  Text("Price always £10 •\nredeemable anytime • weekly\nRaindrop draw", style: TextStyle(color: Colors.grey[500], fontSize: 13, height: 1.3)),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(8)),
+                child: Column(
+                  children: [
+                    const Text("Holding:", style: TextStyle(color: Color(0xFF2E67A0), fontSize: 11)),
+                    Text("$rainTickets", style: const TextStyle(color: Color(0xFF2E67A0), fontWeight: FontWeight.bold, fontSize: 14)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          
+          Row(
+            children: [
+              _miniStat("Price", "£10.00", "fixed"),
+              const SizedBox(width: 12),
+              _miniStat("Holdings", "$rainTickets", "tickets"),
+              const SizedBox(width: 12),
+              _miniStat("Redeem", "£10.00", "each"),
+            ],
+          ),
+          const SizedBox(height: 24),
+          
+          // BUY SECTION
+          Text("Buy quantity", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _buyController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: "e.g. 5",
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey[300]!)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey[300]!)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2E67A0))),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2E67A0), 
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
+              ),
+              onPressed: _buyTickets, 
+              child: const Text("Buy", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // SELL SECTION
+          Text("Sell quantity", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _sellController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: "e.g. 3",
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey[300]!)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey[300]!)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2E67A0))),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.black,
+                side: BorderSide(color: Colors.grey[300]!),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 14)
+              ),
+              onPressed: _sellTickets, 
+              child: const Text("Sell / Redeem", style: TextStyle(fontWeight: FontWeight.w600))
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // ODDS DROPDOWN
+          Container(
+            decoration: BoxDecoration(color: const Color(0xFFF0F4F8), borderRadius: BorderRadius.circular(12)),
+            child: Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                iconColor: const Color(0xFF2E67A0),
+                collapsedIconColor: const Color(0xFF2E67A0),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                title: Row(
+                  children: [
+                    const Icon(Icons.info_outline, size: 20, color: Color(0xFF2E67A0)),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text("RainTicket odds\n(weekly)", style: TextStyle(color: Color(0xFF192A41), fontWeight: FontWeight.w600, fontSize: 15, height: 1.2)),
+                    ),
+                    Text("Tap to\nexpand", textAlign: TextAlign.right, style: TextStyle(color: Colors.grey[500], fontSize: 11, height: 1.2)),
+                  ],
+                ),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _oddsRow("89.878%", "0 Raindrops"),
+                        _oddsRow("8%", "10 Raindrops"),
+                        _oddsRow("1.5%", "20 Raindrops"),
+                        _oddsRow("0.22%", "60 Raindrops"),
+                        _oddsRow("0.3%", "30 Raindrops"),
+                        _oddsRow("0.08%", "80 Raindrops"),
+                        _oddsRow("0.02%", "270 Raindrops"),
+                        _oddsRow("0.002%", "5,000 Raindrops"),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Expected value ≈ 1.54 Raindrops/week per ticket (~4% annually at current conversion).", 
+                          style: TextStyle(color: Colors.grey[600], fontSize: 12, height: 1.4)
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _oddsRow(String percentage, String payout) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(percentage, style: const TextStyle(color: Color(0xFF2E67A0), fontSize: 13, fontWeight: FontWeight.w500)),
+          Text(payout, style: const TextStyle(color: Color(0xFF2E67A0), fontSize: 13)),
+        ],
+      ),
     );
   }
 
@@ -928,36 +1125,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             )
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTicketPurchaseCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Rain Ticket", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const Text("Price always £10", style: TextStyle(color: Colors.grey)),
-          const SizedBox(height: 20),
-          const TextField(decoration: InputDecoration(labelText: "Buy quantity", hintText: "e.g. 5")),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2E67A0), foregroundColor: Colors.white),
-              onPressed: () {
-                setState(() {
-                  rainTickets++;
-                  linkedBalance -= 10;
-                });
-              }, 
-              child: const Text("Buy")
-            ),
-          ),
-        ],
       ),
     );
   }
