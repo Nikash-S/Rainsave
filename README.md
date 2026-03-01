@@ -2,7 +2,8 @@
 
 **A principal-protected, prize-linked savings app designed to help users safely transition away from gambling through harm reduction.**
 
-![Rainsave Banner](https://via.placeholder.com/1200x400?text=Rainsave+-+Replacing+Risk+With+Reward) ## 💡 The Problem
+
+## 💡 The Problem
 Quitting gambling "cold turkey" is notoriously difficult. Many recovering gamblers struggle because they miss the dopamine hit of the "reveal" and the possibility of a reward. Traditional banking apps feel unrewarding, making relapse a constant threat.
 
 ## 🚀 Our Solution
