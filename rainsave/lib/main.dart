@@ -1463,8 +1463,8 @@ void _buyTickets() async {
                   Slider(
                     value: tempLimit,
                     min: 1,
-                    max: 10,
-                    divisions: 9,
+                    max: playableTickets/1,
+                    divisions: 5,
                     activeColor: const Color(0xFF2E67A0),
                     onChanged: (val) {
                       setModalState(() {
