@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "495543204481",
+    "project_id": "rainsave-hackathon",
+    "storage_bucket": "rainsave-hackathon.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495543204481:android:4a7a6a136e971b95eeab80",
+        "android_client_info": {
+          "package_name": "com.example.rainsave"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmGEwEgzlcvi4lP01AxD49yy7GjqShCTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
